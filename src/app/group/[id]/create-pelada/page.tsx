@@ -1,5 +1,5 @@
-import { getGroupDetails } from "@/lib/actions/group";
-import { getCurrentUser } from "@/lib/actions/auth";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
+import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 import { notFound, redirect } from "next/navigation";
 import { CreatePeladaClient } from "./create-pelada-client";
 
@@ -11,11 +11,11 @@ export default async function CreatePeladaPage({
   params,
 }: CreatePeladaPageProps) {
   const { id } = await params;
-  const user = await getCurrentUser();
+  const user = await getCurrentUserServer();
   if (!user) redirect("/");
   if (!user.is_admin) redirect(`/group/${id}`);
 
-  const group = await getGroupDetails(id);
+  const group = await getGroupDetailsServer(id);
   if (!group) notFound();
 
   const members = group.group_members.map((gm) => ({

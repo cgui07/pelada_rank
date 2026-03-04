@@ -1,10 +1,10 @@
-import { getCurrentUser } from "@/lib/actions/auth";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { HomeClient } from "./home-client";
 
 export default async function HomePage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUserServer();
 
   if (user) {
     if (user.is_admin) {

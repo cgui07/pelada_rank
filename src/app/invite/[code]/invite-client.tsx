@@ -3,8 +3,8 @@
 import { useState, useEffect, useTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AuthModal } from "@/components/auth-modal";
-import { joinGroupByInviteCode } from "@/lib/actions/group";
-import { getCurrentUser } from "@/lib/actions/auth";
+import { joinGroupByInviteCode } from "@/lib/api/client/group-client";
+import { getCurrentUser } from "@/lib/api/client/auth-client";
 import { PageLoader } from "@/components/ui/spinner";
 
 interface InviteClientProps {

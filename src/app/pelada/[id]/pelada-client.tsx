@@ -10,7 +10,7 @@ import { PlayerAvatar } from "@/components/ui/player-avatar";
 import { Podium } from "@/components/ui/podium";
 import { Spinner } from "@/components/ui/spinner";
 import { submitAllRatings } from "@/lib/actions/rating";
-import { updatePeladaStatus } from "@/lib/actions/group";
+import { updatePeladaStatus } from "@/lib/api/client/group-client";
 import {
   ArrowLeft,
   Save,

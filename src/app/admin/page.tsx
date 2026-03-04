@@ -1,13 +1,13 @@
-import { getCurrentUser } from "@/lib/actions/auth";
-import { getAllGroups } from "@/lib/actions/admin";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
+import { getAllGroupsServer } from "@/lib/api/server/admin-server";
 import { redirect } from "next/navigation";
 import { AdminClient } from "./admin-client";
 
 export default async function AdminPage() {
-  const user = await getCurrentUser();
+  const user = await getCurrentUserServer();
   if (!user || !user.is_admin) redirect("/");
 
-  const groups = await getAllGroups();
+  const groups = await getAllGroupsServer();
 
   const groupsList = groups.map((g) => ({
     id: g.id,
@@ -15,7 +15,7 @@ export default async function AdminPage() {
     inviteCode: g.invite_code,
     memberCount: g._count.group_members,
     peladaCount: g._count.peladas,
-    createdAt: g.created_at.toISOString(),
+    createdAt: g.created_at,
   }));
 
   return (
