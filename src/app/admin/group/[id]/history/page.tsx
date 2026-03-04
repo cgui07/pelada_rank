@@ -1,6 +1,6 @@
-import { getGroupDetails } from "@/lib/actions/group";
+import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 import { getGroupLeaderboard } from "@/lib/actions/history";
-import { getCurrentUser } from "@/lib/actions/auth";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
 import { notFound, redirect } from "next/navigation";
 import { HistoryClient } from "@/app/group/[id]/history/history-client";
 
@@ -12,10 +12,10 @@ export default async function AdminHistoryPage({
   params,
 }: AdminHistoryPageProps) {
   const { id } = await params;
-  const user = await getCurrentUser();
+  const user = await getCurrentUserServer();
   if (!user || !user.is_admin) redirect("/");
 
-  const group = await getGroupDetails(id);
+  const group = await getGroupDetailsServer(id);
   if (!group) notFound();
 
   const leaderboard = await getGroupLeaderboard(id);
@@ -25,7 +25,7 @@ export default async function AdminHistoryPage({
     .map((p) => ({
       id: p.id,
       name: p.name,
-      playedAt: p.played_at.toISOString(),
+      playedAt: p.played_at,
       participantCount: p._count.pelada_participants,
     }));
 

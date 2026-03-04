@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import { login, register, checkUsername } from "@/lib/actions/auth";
+import { login, register, checkUsername } from "@/lib/api/client/auth-client";
 import { Shield, LogIn, UserPlus, CheckCircle, XCircle, Crown } from "lucide-react";
 
 interface AuthModalProps {

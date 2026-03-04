@@ -10,6 +10,10 @@ const JWT_SECRET = new TextEncoder().encode(
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   // Public paths that don't need auth
   const publicPaths = ["/", "/api/auth"];
   if (publicPaths.some((p) => pathname === p)) {

@@ -6,7 +6,7 @@ import { AuthModal } from "@/components/auth-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trophy, LogIn, Shield, LogOut, Link2 } from "lucide-react";
-import { logout } from "@/lib/actions/auth";
+import { logout } from "@/lib/api/client/auth-client";
 import Link from "next/link";
 
 interface HomeClientProps {

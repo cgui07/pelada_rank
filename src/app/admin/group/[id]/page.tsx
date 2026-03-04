@@ -1,5 +1,5 @@
-import { getGroupDetails } from "@/lib/actions/group";
-import { getCurrentUser } from "@/lib/actions/auth";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
+import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 import { notFound, redirect } from "next/navigation";
 import { GroupDashboardClient } from "@/app/group/[id]/group-client";
 
@@ -9,10 +9,10 @@ interface AdminGroupPageProps {
 
 export default async function AdminGroupPage({ params }: AdminGroupPageProps) {
   const { id } = await params;
-  const user = await getCurrentUser();
+  const user = await getCurrentUserServer();
   if (!user || !user.is_admin) redirect("/");
 
-  const group = await getGroupDetails(id);
+  const group = await getGroupDetailsServer(id);
   if (!group) notFound();
 
   const members = group.group_members.map((gm) => ({
@@ -23,7 +23,7 @@ export default async function AdminGroupPage({ params }: AdminGroupPageProps) {
   const peladas = group.peladas.map((p) => ({
     id: p.id,
     name: p.name,
-    playedAt: p.played_at.toISOString(),
+    playedAt: p.played_at,
     status: p.status,
     createdBy: p.users.username,
     participantCount: p._count.pelada_participants,

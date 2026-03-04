@@ -13,7 +13,7 @@ import {
   adminGeneratePin,
   getAuditLog,
   createGroup,
-} from "@/lib/actions/admin";
+} from "@/lib/api/client/admin-client";
 import {
   Search,
   KeyRound,
@@ -163,7 +163,7 @@ function PinResetSection() {
   const [foundUser, setFoundUser] = useState<{
     id: string;
     username: string;
-    created_at: Date;
+    created_at: string;
   } | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [newPin, setNewPin] = useState("");
@@ -475,7 +475,7 @@ function AuditLogSection() {
       admin_username: string;
       target_username: string;
       action_type: string;
-      created_at: Date;
+      created_at: string;
     }[]
   >([]);
   const [loaded, setLoaded] = useState(false);

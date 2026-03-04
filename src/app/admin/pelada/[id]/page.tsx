@@ -1,5 +1,5 @@
-import { getPeladaDetails } from "@/lib/actions/group";
-import { getCurrentUser } from "@/lib/actions/auth";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
+import { getPeladaDetailsServer } from "@/lib/api/server/group-server";
 import { notFound, redirect } from "next/navigation";
 import { PeladaClient } from "@/app/pelada/[id]/pelada-client";
 
@@ -11,10 +11,10 @@ export default async function AdminPeladaPage({
   params,
 }: AdminPeladaPageProps) {
   const { id } = await params;
-  const user = await getCurrentUser();
+  const user = await getCurrentUserServer();
   if (!user || !user.is_admin) redirect("/");
 
-  const pelada = await getPeladaDetails(id);
+  const pelada = await getPeladaDetailsServer(id);
   if (!pelada) notFound();
 
   const isParticipant = pelada.pelada_participants.some(
@@ -43,7 +43,7 @@ export default async function AdminPeladaPage({
     <PeladaClient
       peladaId={pelada.id}
       peladaName={pelada.name}
-      playedAt={pelada.played_at.toISOString()}
+      playedAt={pelada.played_at}
       status={pelada.status}
       groupId={pelada.groups.id}
       groupName={pelada.groups.name}
