@@ -4,6 +4,10 @@ import { jwtVerify } from "jose";
 import { SESSION_COOKIE_NAME } from "@/lib/constants";
 import { getJwtSecretOrThrow } from "@/lib/env";
 
+function isLikelyJwt(token: string): boolean {
+  return /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token);
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -27,6 +31,12 @@ export async function middleware(request: NextRequest) {
     url.pathname = "/";
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
+  }
+
+  if (!isLikelyJwt(token)) {
+    const response = NextResponse.redirect(new URL("/", request.url));
+    response.cookies.delete(SESSION_COOKIE_NAME);
+    return response;
   }
 
   try {

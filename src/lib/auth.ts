@@ -18,6 +18,10 @@ export interface SessionPayload {
   isAdmin: boolean;
 }
 
+function isLikelyJwt(token: string): boolean {
+  return /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token);
+}
+
 export async function createSession(payload: SessionPayload): Promise<string> {
   const token = await new SignJWT(payload as unknown as Record<string, unknown>)
     .setProtectedHeader({ alg: "HS256" })
@@ -41,6 +45,10 @@ export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return null;
+
+  if (!isLikelyJwt(token)) {
+    return null;
+  }
 
   try {
     const { payload } = await jwtVerify(token, getJwtSecretOrThrow());

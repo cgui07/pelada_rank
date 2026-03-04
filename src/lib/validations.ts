@@ -21,11 +21,14 @@ export const loginSchema = z.object({
   pin: pinSchema,
 });
 
+export const roleSchema = z.enum(["user", "admin"]);
+
 export const registerSchema = z
   .object({
     username: usernameSchema,
     pin: pinSchema,
     confirmPin: pinSchema,
+    role: roleSchema,
   })
   .refine((data) => data.pin === data.confirmPin, {
     message: "PINs nao coincidem",

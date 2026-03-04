@@ -1,9 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-process.env.ADMIN_ALLOWLIST_USERNAMES = "staff_admin";
-process.env.ALLOW_FIRST_ADMIN_BOOTSTRAP = "false";
-delete process.env.ADMIN_BOOTSTRAP_TOKEN;
-
 const {
   dbMock,
   hashPinMock,
@@ -50,56 +46,72 @@ describe("auth service integration", () => {
     vi.clearAllMocks();
   });
 
-  it("grants admin only when registration policy allows", async () => {
+  it("registers a regular user with role 'user'", async () => {
     dbMock.users.findFirst.mockResolvedValue(null);
     dbMock.users.create.mockResolvedValue({
       id: "u1",
-      username: "staff_admin",
-      is_admin: true,
+      username: "player1",
+      is_admin: false,
     });
 
     await registerUser({
-      username: "staff_admin",
+      username: "player1",
       pin: "1234",
       confirmPin: "1234",
-      requestAdmin: true,
+      role: "user",
     });
 
     expect(dbMock.users.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          username: "staff_admin",
+          username: "player1",
           pin_hash: "hash-1234",
-          is_admin: true,
+          is_admin: false,
         }),
       }),
     );
     expect(createSessionMock).toHaveBeenCalledWith({
       userId: "u1",
-      username: "staff_admin",
-      isAdmin: true,
+      username: "player1",
+      isAdmin: false,
     });
   });
 
-  it("blocks unauthorized admin self-registration", async () => {
+  it("registers an admin user with role 'admin'", async () => {
     dbMock.users.findFirst.mockResolvedValue(null);
+    dbMock.users.create.mockResolvedValue({
+      id: "u2",
+      username: "organizer1",
+      is_admin: true,
+    });
 
-    await expect(
-      registerUser({
-        username: "not_allowlisted",
-        pin: "1234",
-        confirmPin: "1234",
-        requestAdmin: true,
+    await registerUser({
+      username: "organizer1",
+      pin: "5678",
+      confirmPin: "5678",
+      role: "admin",
+    });
+
+    expect(dbMock.users.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          username: "organizer1",
+          pin_hash: "hash-5678",
+          is_admin: true,
+        }),
       }),
-    ).rejects.toThrow("Registro admin nao autorizado");
-
-    expect(dbMock.users.create).not.toHaveBeenCalled();
+    );
+    expect(createSessionMock).toHaveBeenCalledWith({
+      userId: "u2",
+      username: "organizer1",
+      isAdmin: true,
+    });
   });
 
   it("logs in valid users and creates session", async () => {
     dbMock.login_attempts.count.mockResolvedValue(0);
     dbMock.users.findFirst.mockResolvedValue({
-      id: "u2",
+      id: "u3",
       username: "player1",
       pin_hash: "hash-1234",
       is_admin: false,
@@ -115,7 +127,7 @@ describe("auth service integration", () => {
     );
 
     expect(createSessionMock).toHaveBeenCalledWith({
-      userId: "u2",
+      userId: "u3",
       username: "player1",
       isAdmin: false,
     });

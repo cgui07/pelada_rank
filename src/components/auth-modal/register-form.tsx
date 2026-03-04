@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { register } from "@/lib/api/client/auth-client";
-import { CheckCircle, UserPlus, XCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { CheckCircle, Shield, User, UserPlus, XCircle } from "lucide-react";
 import { PinInput } from "./pin-input";
 import { useUsernameAvailability } from "./use-username-availability";
 
@@ -16,6 +17,7 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) {
+  const [role, setRole] = useState<"user" | "admin">("user");
   const [username, setUsername] = useState("");
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
@@ -33,7 +35,7 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
     }
 
     startTransition(async () => {
-      const result = await register({ username, pin, confirmPin });
+      const result = await register({ username, pin, confirmPin, role });
       if (result.success) {
         onSuccess();
         return;
@@ -45,6 +47,38 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label>Tipo de conta</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setRole("user")}
+            className={cn(
+              "flex items-center justify-center gap-2 rounded-md border-2 px-3 py-2 text-sm font-medium transition-colors",
+              role === "user"
+                ? "border-brand bg-brand/10 text-brand"
+                : "border-muted bg-background text-muted-foreground hover:border-foreground/30",
+            )}
+          >
+            <User className="h-4 w-4" />
+            Usuário
+          </button>
+          <button
+            type="button"
+            onClick={() => setRole("admin")}
+            className={cn(
+              "flex items-center justify-center gap-2 rounded-md border-2 px-3 py-2 text-sm font-medium transition-colors",
+              role === "admin"
+                ? "border-brand bg-brand/10 text-brand"
+                : "border-muted bg-background text-muted-foreground hover:border-foreground/30",
+            )}
+          >
+            <Shield className="h-4 w-4" />
+            Admin
+          </button>
+        </div>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="register-username">Nome do usuário</Label>
         <div className="relative">

@@ -14,13 +14,40 @@ export interface CreateGroupInput {
   inviteCode: string;
 }
 
-export async function searchUser(username: string) {
-  await requireAdminSession();
+async function requireMemberOfAdminGroups(
+  adminUserId: string,
+  targetUserId: string,
+): Promise<void> {
+  const membership = await db.group_members.findFirst({
+    where: {
+      user_id: targetUserId,
+      groups: { owner_id: adminUserId },
+    },
+  });
 
-  return db.users.findFirst({
-    where: { username: { equals: username, mode: "insensitive" } },
+  if (!membership) {
+    throw new ApiRouteError(
+      "Usuario nao pertence a nenhum dos seus grupos",
+      403,
+      "FORBIDDEN",
+    );
+  }
+}
+
+export async function searchUser(username: string) {
+  const session = await requireAdminSession();
+
+  const user = await db.users.findFirst({
+    where: {
+      username: { equals: username, mode: "insensitive" },
+      group_members: {
+        some: { groups: { owner_id: session.userId } },
+      },
+    },
     select: { id: true, username: true, created_at: true },
   });
+
+  return user;
 }
 
 export async function adminSetPin(data: SetPinInput): Promise<string> {
@@ -32,6 +59,8 @@ export async function adminSetPin(data: SetPinInput): Promise<string> {
   if (!user) {
     throw new ApiRouteError("Usuario nao encontrado", 404, "NOT_FOUND");
   }
+
+  await requireMemberOfAdminGroups(session.userId, user.id);
 
   const hash = await hashPin(data.newPin);
   await db.users.update({
@@ -60,6 +89,8 @@ export async function adminGeneratePin(targetUsername: string): Promise<string> 
     throw new ApiRouteError("Usuario nao encontrado", 404, "NOT_FOUND");
   }
 
+  await requireMemberOfAdminGroups(session.userId, user.id);
+
   const newPin = String(randomInt(1000, 10000));
   const hash = await hashPin(newPin);
 
@@ -80,9 +111,10 @@ export async function adminGeneratePin(targetUsername: string): Promise<string> 
 }
 
 export async function getAuditLog() {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
   return db.admin_audit_log.findMany({
+    where: { admin_username: session.username },
     orderBy: { created_at: "desc" },
     take: 50,
   });

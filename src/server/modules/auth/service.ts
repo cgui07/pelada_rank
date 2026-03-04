@@ -7,7 +7,6 @@ import {
   getSession,
 } from "@/lib/auth";
 import { LOGIN_WINDOW_MINUTES, MAX_LOGIN_ATTEMPTS } from "@/lib/constants";
-import { serverConfig } from "@/server/lib/config";
 import { ApiRouteError } from "@/server/lib/api-handler";
 
 export interface LoginInput {
@@ -19,9 +18,7 @@ export interface RegisterInput {
   username: string;
   pin: string;
   confirmPin: string;
-  requestAdmin?: boolean;
-  adminBootstrapToken?: string;
-  isAdmin?: boolean;
+  role: "user" | "admin";
 }
 
 async function checkRateLimit(username: string, ip: string): Promise<boolean> {
@@ -109,42 +106,13 @@ export async function registerUser(data: RegisterInput): Promise<void> {
   }
 
   const pinHash = await hashPin(data.pin);
-  const wantsAdmin = data.requestAdmin === true || data.isAdmin === true;
-  let shouldGrantAdmin = false;
-
-  if (wantsAdmin) {
-    const normalizedUsername = data.username.toLowerCase();
-    const isAllowlisted =
-      serverConfig.adminAllowlistUsernames.has(normalizedUsername);
-
-    const hasValidBootstrapToken =
-      !!serverConfig.adminBootstrapToken &&
-      data.adminBootstrapToken === serverConfig.adminBootstrapToken;
-
-    let canBootstrapFirstAdmin = false;
-    if (serverConfig.allowFirstAdminBootstrap) {
-      const adminsCount = await db.users.count({
-        where: { is_admin: true },
-      });
-      canBootstrapFirstAdmin = adminsCount === 0;
-    }
-
-    if (isAllowlisted || hasValidBootstrapToken || canBootstrapFirstAdmin) {
-      shouldGrantAdmin = true;
-    } else {
-      throw new ApiRouteError(
-        "Registro admin nao autorizado",
-        403,
-        "FORBIDDEN",
-      );
-    }
-  }
+  const isAdmin = data.role === "admin";
 
   const user = await db.users.create({
     data: {
       username: data.username,
       pin_hash: pinHash,
-      is_admin: shouldGrantAdmin,
+      is_admin: isAdmin,
     },
   });
 
