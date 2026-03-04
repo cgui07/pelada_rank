@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model admin_audit_log {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  admin_username  String   @db.VarChar(30)
+  target_username String   @db.VarChar(30)
+  action_type     String   @db.VarChar(30)
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([created_at(sort: Desc)], map: "admin_audit_log_date")
+}
+
+model group_members {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  group_id  String   @db.Uuid
+  user_id   String   @db.Uuid
+  joined_at DateTime @default(now()) @db.Timestamptz(6)
+  groups    groups   @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users     users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([group_id, user_id], map: "group_members_group_user")
+}
+
+model groups {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String          @db.VarChar(100)
+  invite_code   String          @unique @db.VarChar(20)
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  group_members group_members[]
+  peladas       peladas[]
+}
+
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model login_attempts {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username     String   @db.VarChar(30)
+  ip_address   String?  @db.VarChar(45)
+  success      Boolean  @default(false)
+  attempted_at DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([ip_address, attempted_at(sort: Desc)], map: "login_attempts_ip_time")
+}
+
+model pelada_participants {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pelada_id String  @db.Uuid
+  user_id   String  @db.Uuid
+  peladas   peladas @relation(fields: [pelada_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users     users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([pelada_id, user_id], map: "pelada_participants_unique")
+}
+
+model pelada_results {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pelada_id     String   @db.Uuid
+  user_id       String   @db.Uuid
+  avg_rating    Decimal  @db.Decimal(3, 2)
+  total_ratings Int      @default(0)
+  rank          Int
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  peladas       peladas  @relation(fields: [pelada_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([pelada_id, user_id], map: "pelada_results_unique")
+  @@index([pelada_id, rank], map: "pelada_results_ranking")
+}
+
+model peladas {
+  id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  group_id            String                @db.Uuid
+  name                String                @db.VarChar(100)
+  played_at           DateTime              @default(dbgenerated("CURRENT_DATE")) @db.Date
+  status              pelada_status         @default(open)
+  created_by          String                @db.Uuid
+  created_at          DateTime              @default(now()) @db.Timestamptz(6)
+  closed_at           DateTime?             @db.Timestamptz(6)
+  pelada_participants pelada_participants[]
+  pelada_results      pelada_results[]
+  users               users                 @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  groups              groups                @relation(fields: [group_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  ratings             ratings[]
+
+  @@index([group_id, played_at(sort: Desc)], map: "peladas_group_date")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model ratings {
+  id                                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  pelada_id                         String   @db.Uuid
+  evaluator_id                      String   @db.Uuid
+  target_id                         String   @db.Uuid
+  stars                             Int      @db.SmallInt
+  created_at                        DateTime @default(now()) @db.Timestamptz(6)
+  users_ratings_evaluator_idTousers users    @relation("ratings_evaluator_idTousers", fields: [evaluator_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  peladas                           peladas  @relation(fields: [pelada_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users_ratings_target_idTousers    users    @relation("ratings_target_idTousers", fields: [target_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([pelada_id, evaluator_id, target_id], map: "ratings_unique_vote")
+  @@index([pelada_id, target_id], map: "ratings_target_pelada")
+}
+
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model users {
+  id                                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username                            String                @db.VarChar(30)
+  pin_hash                            String                @db.VarChar(255)
+  created_at                          DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at                          DateTime              @default(now()) @db.Timestamptz(6)
+  group_members                       group_members[]
+  pelada_participants                 pelada_participants[]
+  pelada_results                      pelada_results[]
+  peladas                             peladas[]
+  ratings_ratings_evaluator_idTousers ratings[]             @relation("ratings_evaluator_idTousers")
+  ratings_ratings_target_idTousers    ratings[]             @relation("ratings_target_idTousers")
+}
+
+enum pelada_status {
+  open
+  voting
+  closed
+}
