@@ -1,5 +1,5 @@
 import { getCurrentUserServer } from "@/lib/api/server/auth-server";
-import { db } from "@/lib/db";
+import { getLatestGroupMembership } from "@/server/modules/group/service";
 import { redirect } from "next/navigation";
 import { HomeClient } from "./home-client";
 
@@ -11,14 +11,10 @@ export default async function HomePage() {
       redirect("/admin");
     }
 
-    const membership = await db.group_members.findFirst({
-      where: { user_id: user.id },
-      orderBy: { joined_at: "desc" },
-      select: { group_id: true },
-    });
+    const latestGroupId = await getLatestGroupMembership(user.id);
 
-    if (membership) {
-      redirect(`/group/${membership.group_id}`);
+    if (latestGroupId) {
+      redirect(`/group/${latestGroupId}`);
     }
 
     return (

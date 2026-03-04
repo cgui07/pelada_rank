@@ -42,7 +42,8 @@ export async function register(formData: {
   username: string;
   pin: string;
   confirmPin: string;
-  isAdmin?: boolean;
+  requestAdmin?: boolean;
+  adminBootstrapToken?: string;
 }): Promise<{ success: boolean; error?: string }> {
   const response = await httpRequest<null>("/api/auth/register", {
     method: "POST",

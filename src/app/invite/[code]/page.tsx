@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getGroupByInviteCode } from "@/server/modules/group/service";
 import { notFound } from "next/navigation";
 import { InviteClient } from "./invite-client";
 
@@ -9,10 +9,7 @@ interface InvitePageProps {
 export default async function InvitePage({ params }: InvitePageProps) {
   const { code } = await params;
 
-  const group = await db.groups.findUnique({
-    where: { invite_code: code },
-    select: { id: true, name: true },
-  });
+  const group = await getGroupByInviteCode(code);
 
   if (!group) {
     notFound();

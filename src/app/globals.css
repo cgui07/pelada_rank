@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -38,7 +38,6 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  /* Semantic tokens */
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-success: var(--success);
@@ -96,7 +95,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  /* Semantic */
   --brand: oklch(0.546 0.245 262.881);
   --brand-foreground: oklch(0.985 0 0);
   --success: oklch(0.627 0.194 149.214);
@@ -146,7 +144,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  /* Semantic */
   --brand: oklch(0.623 0.214 259.815);
   --brand-foreground: oklch(0.985 0 0);
   --success: oklch(0.627 0.194 149.214);

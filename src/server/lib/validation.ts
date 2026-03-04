@@ -8,7 +8,12 @@ export function parseInput<TSchema extends ZodTypeAny>(
   const parsed = schema.safeParse(input);
 
   if (!parsed.success) {
-    throw new ApiRouteError(parsed.error.issues[0]?.message || "Dados invalidos", 400);
+    throw new ApiRouteError(
+      parsed.error.issues[0]?.message || "Dados invalidos",
+      400,
+      "VALIDATION_ERROR",
+      parsed.error.issues,
+    );
   }
 
   return parsed.data;
