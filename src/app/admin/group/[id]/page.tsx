@@ -1,16 +1,16 @@
 import { getGroupDetails } from "@/lib/actions/group";
 import { getCurrentUser } from "@/lib/actions/auth";
 import { notFound, redirect } from "next/navigation";
-import { GroupDashboardClient } from "./group-client";
+import { GroupDashboardClient } from "@/app/group/[id]/group-client";
 
-interface GroupPageProps {
+interface AdminGroupPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function GroupPage({ params }: GroupPageProps) {
+export default async function AdminGroupPage({ params }: AdminGroupPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();
-  if (!user) redirect("/");
+  if (!user || !user.is_admin) redirect("/");
 
   const group = await getGroupDetails(id);
   if (!group) notFound();
@@ -39,7 +39,8 @@ export default async function GroupPage({ params }: GroupPageProps) {
       peladas={peladas}
       currentUserId={user.id}
       currentUsername={user.username}
-      isCurrentUserAdmin={user.is_admin}
+      isCurrentUserAdmin
+      routePrefix="/admin"
     />
   );
 }

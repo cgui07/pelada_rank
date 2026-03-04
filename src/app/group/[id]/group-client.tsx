@@ -39,6 +39,7 @@ interface GroupDashboardClientProps {
   currentUserId: string;
   currentUsername: string;
   isCurrentUserAdmin: boolean;
+  routePrefix?: string;
 }
 
 const statusConfig: Record<
@@ -71,9 +72,13 @@ export function GroupDashboardClient({
   currentUserId,
   currentUsername,
   isCurrentUserAdmin,
+  routePrefix = "",
 }: GroupDashboardClientProps) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
+  const groupRoute = `${routePrefix}/group/${groupId}`;
+  const createPeladaRoute = `${groupRoute}/create-pelada`;
+  const historyRoute = `${groupRoute}/history`;
 
   function copyInviteLink() {
     const link = `${window.location.origin}/invite/${inviteCode}`;
@@ -137,14 +142,14 @@ export function GroupDashboardClient({
 
         <div className="flex gap-2 flex-wrap">
           {isCurrentUserAdmin && (
-            <Link href={`/group/${groupId}/create-pelada`}>
+            <Link href={createPeladaRoute}>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
                 Nova Pelada
               </Button>
             </Link>
           )}
-          <Link href={`/group/${groupId}/history`}>
+          <Link href={historyRoute}>
             <Button variant="outline">
               <BarChart3 className="h-4 w-4 mr-2" />
               Histórico
@@ -172,7 +177,7 @@ export function GroupDashboardClient({
                 return (
                   <Link
                     key={pelada.id}
-                    href={`/pelada/${pelada.id}`}
+                    href={`${routePrefix}/pelada/${pelada.id}`}
                     className="block"
                   >
                     <div className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors">

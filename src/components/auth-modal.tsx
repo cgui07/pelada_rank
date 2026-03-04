@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { login, register, checkUsername } from "@/lib/actions/auth";
-import { Shield, LogIn, UserPlus, CheckCircle, XCircle } from "lucide-react";
+import { Shield, LogIn, UserPlus, CheckCircle, XCircle, Crown } from "lucide-react";
 
 interface AuthModalProps {
   open: boolean;
@@ -161,26 +161,23 @@ function RegisterForm({
   const [username, setUsername] = useState("");
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
   const [usernameStatus, setUsernameStatus] = useState<
     "idle" | "checking" | "available" | "taken"
   >("idle");
+  const usernameCheckTimer = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   useEffect(() => {
-    if (username.length < 3) {
-      setUsernameStatus("idle");
-      return;
-    }
-
-    setUsernameStatus("checking");
-    const timer = setTimeout(async () => {
-      const result = await checkUsername(username);
-      setUsernameStatus(result.available ? "available" : "taken");
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [username]);
+    return () => {
+      if (usernameCheckTimer.current) {
+        clearTimeout(usernameCheckTimer.current);
+      }
+    };
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -192,7 +189,7 @@ function RegisterForm({
     }
 
     startTransition(async () => {
-      const result = await register({ username, pin, confirmPin });
+      const result = await register({ username, pin, confirmPin, isAdmin });
       if (result.success) {
         onSuccess();
       } else {
@@ -210,9 +207,25 @@ function RegisterForm({
             id="register-username"
             placeholder="seu_username"
             value={username}
-            onChange={(e) =>
-              setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))
-            }
+            onChange={(e) => {
+              const nextUsername = e.target.value.replace(/[^a-zA-Z0-9_]/g, "");
+              setUsername(nextUsername);
+
+              if (usernameCheckTimer.current) {
+                clearTimeout(usernameCheckTimer.current);
+              }
+
+              if (nextUsername.length < 3) {
+                setUsernameStatus("idle");
+                return;
+              }
+
+              setUsernameStatus("checking");
+              usernameCheckTimer.current = setTimeout(async () => {
+                const result = await checkUsername(nextUsername);
+                setUsernameStatus(result.available ? "available" : "taken");
+              }, 500);
+            }}
             autoComplete="username"
             autoFocus
           />
@@ -267,6 +280,29 @@ function RegisterForm({
           <p className="text-xs text-danger">PINs não coincidem</p>
         )}
       </div>
+
+      <button
+        type="button"
+        onClick={() => setIsAdmin((v) => !v)}
+        className={`w-full flex items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
+          isAdmin
+            ? "border-brand bg-brand/10 text-brand"
+            : "border-border bg-card text-muted-foreground hover:border-brand/50"
+        }`}
+      >
+        <Crown className={`h-5 w-5 shrink-0 ${isAdmin ? "text-brand" : "text-muted-foreground"}`} />
+        <div>
+          <p className="text-sm font-medium leading-none text-foreground">
+            Sou organizador (admin)
+          </p>
+          <p className="text-xs mt-1 text-muted-foreground">
+            Posso criar grupos e peladas
+          </p>
+        </div>
+        <div className={`ml-auto h-4 w-4 rounded-full border-2 flex items-center justify-center ${isAdmin ? "border-brand bg-brand" : "border-muted-foreground"}`}>
+          {isAdmin && <div className="h-2 w-2 rounded-full bg-white" />}
+        </div>
+      </button>
 
       {error && (
         <div className="text-sm text-danger flex items-center gap-1.5">

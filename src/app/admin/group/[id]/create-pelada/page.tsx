@@ -1,19 +1,18 @@
 import { getGroupDetails } from "@/lib/actions/group";
 import { getCurrentUser } from "@/lib/actions/auth";
 import { notFound, redirect } from "next/navigation";
-import { CreatePeladaClient } from "./create-pelada-client";
+import { CreatePeladaClient } from "@/app/group/[id]/create-pelada/create-pelada-client";
 
-interface CreatePeladaPageProps {
+interface AdminCreatePeladaPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function CreatePeladaPage({
+export default async function AdminCreatePeladaPage({
   params,
-}: CreatePeladaPageProps) {
+}: AdminCreatePeladaPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();
-  if (!user) redirect("/");
-  if (!user.is_admin) redirect(`/group/${id}`);
+  if (!user || !user.is_admin) redirect("/");
 
   const group = await getGroupDetails(id);
   if (!group) notFound();
@@ -28,6 +27,7 @@ export default async function CreatePeladaPage({
       groupId={group.id}
       groupName={group.name}
       members={members}
+      routePrefix="/admin"
     />
   );
 }

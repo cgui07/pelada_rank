@@ -32,11 +32,12 @@ model groups {
   name          String          @db.VarChar(100)
   invite_code   String          @unique @db.VarChar(20)
   created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  owner_id      String?         @db.Uuid
   group_members group_members[]
+  users         users?          @relation(fields: [owner_id], references: [id], onUpdate: NoAction)
   peladas       peladas[]
 }
 
-/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model login_attempts {
   id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username     String   @db.VarChar(30)
@@ -90,7 +91,6 @@ model peladas {
   @@index([group_id, played_at(sort: Desc)], map: "peladas_group_date")
 }
 
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model ratings {
   id                                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   pelada_id                         String   @db.Uuid
@@ -106,14 +106,15 @@ model ratings {
   @@index([pelada_id, target_id], map: "ratings_target_pelada")
 }
 
-/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model users {
   id                                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username                            String                @db.VarChar(30)
   pin_hash                            String                @db.VarChar(255)
   created_at                          DateTime              @default(now()) @db.Timestamptz(6)
   updated_at                          DateTime              @default(now()) @db.Timestamptz(6)
+  is_admin                            Boolean               @default(false)
   group_members                       group_members[]
+  groups                              groups[]
   pelada_participants                 pelada_participants[]
   pelada_results                      pelada_results[]
   peladas                             peladas[]

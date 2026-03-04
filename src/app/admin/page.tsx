@@ -1,12 +1,11 @@
 import { getCurrentUser } from "@/lib/actions/auth";
-import { isAdmin } from "@/lib/auth";
 import { getAllGroups } from "@/lib/actions/admin";
 import { redirect } from "next/navigation";
 import { AdminClient } from "./admin-client";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
-  if (!user || !isAdmin(user.username)) redirect("/");
+  if (!user || !user.is_admin) redirect("/");
 
   const groups = await getAllGroups();
 

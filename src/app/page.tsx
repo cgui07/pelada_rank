@@ -1,5 +1,4 @@
 import { getCurrentUser } from "@/lib/actions/auth";
-import { isAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { HomeClient } from "./home-client";
@@ -8,6 +7,10 @@ export default async function HomePage() {
   const user = await getCurrentUser();
 
   if (user) {
+    if (user.is_admin) {
+      redirect("/admin");
+    }
+
     const membership = await db.group_members.findFirst({
       where: { user_id: user.id },
       orderBy: { joined_at: "desc" },
@@ -22,7 +25,7 @@ export default async function HomePage() {
       <HomeClient
         isLoggedIn
         username={user.username}
-        isUserAdmin={isAdmin(user.username)}
+        isUserAdmin={false}
       />
     );
   }

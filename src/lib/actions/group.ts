@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { getSession, isAdmin } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import { createPeladaSchema } from "@/lib/validations";
 
 export async function joinGroupByInviteCode(inviteCode: string): Promise<{
@@ -39,11 +39,7 @@ export async function getGroupDetails(groupId: string) {
   const session = await getSession();
   if (!session) return null;
 
-  const membership = await db.group_members.findFirst({
-    where: { group_id: groupId, user_id: session.userId },
-  });
-  if (!membership) return null;
-
+  // Allow access if user is a member OR is the group owner
   const group = await db.groups.findUnique({
     where: { id: groupId },
     include: {
@@ -63,6 +59,13 @@ export async function getGroupDetails(groupId: string) {
     },
   });
 
+  if (!group) return null;
+
+  const isOwner = group.owner_id === session.userId;
+  const isMember = group.group_members.some((m) => m.user_id === session.userId);
+
+  if (!isOwner && !isMember) return null;
+
   return group;
 }
 
@@ -75,7 +78,7 @@ export async function createPelada(formData: {
   const session = await getSession();
   if (!session) return { success: false, error: "Não autenticado" };
 
-  if (!isAdmin(session.username)) {
+  if (!session.isAdmin) {
     return { success: false, error: "Apenas admins podem criar peladas" };
   }
 
@@ -85,6 +88,12 @@ export async function createPelada(formData: {
   }
 
   const { groupId, name, playedAt, participantIds } = parsed.data;
+
+  // Verify the admin owns this group
+  const group = await db.groups.findUnique({ where: { id: groupId } });
+  if (!group || group.owner_id !== session.userId) {
+    return { success: false, error: "Você não tem permissão neste grupo" };
+  }
 
   const members = await db.group_members.findMany({
     where: { group_id: groupId },
@@ -124,8 +133,17 @@ export async function updatePeladaStatus(
   const session = await getSession();
   if (!session) return { success: false, error: "Não autenticado" };
 
-  if (!isAdmin(session.username)) {
+  if (!session.isAdmin) {
     return { success: false, error: "Apenas admins" };
+  }
+
+  // Verify the admin owns the group this pelada belongs to
+  const pelada = await db.peladas.findUnique({
+    where: { id: peladaId },
+    include: { groups: { select: { owner_id: true } } },
+  });
+  if (!pelada || pelada.groups.owner_id !== session.userId) {
+    return { success: false, error: "Você não tem permissão nesta pelada" };
   }
 
   await db.peladas.update({
@@ -187,7 +205,7 @@ export async function getPeladaDetails(peladaId: string) {
   const pelada = await db.peladas.findUnique({
     where: { id: peladaId },
     include: {
-      groups: { select: { id: true, name: true } },
+      groups: { select: { id: true, name: true, owner_id: true } },
       users: { select: { username: true } },
       pelada_participants: {
         include: {
@@ -205,10 +223,12 @@ export async function getPeladaDetails(peladaId: string) {
 
   if (!pelada) return null;
 
+  const isOwner = pelada.groups.owner_id === session.userId;
   const membership = await db.group_members.findFirst({
     where: { group_id: pelada.group_id, user_id: session.userId },
   });
-  if (!membership) return null;
+
+  if (!isOwner && !membership) return null;
 
   const userRatings = await db.ratings.findMany({
     where: { pelada_id: peladaId, evaluator_id: session.userId },

@@ -1,5 +1,3 @@
-export const ADMIN_USERNAMES: string[] = ["admin", "organizer"];
-
 export const PIN_LENGTH = 4;
 export const SESSION_COOKIE_NAME = "pelada_session";
 export const SESSION_EXPIRY_DAYS = 30;
