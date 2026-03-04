@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useState } from "react";
+import type { GroupItem } from "./types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, CheckCircle, Copy, FolderOpen, Trophy, Users } from "lucide-react";
-import type { GroupItem } from "./types";
 
 interface GroupsListSectionProps {
   groups: GroupItem[];

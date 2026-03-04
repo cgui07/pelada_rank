@@ -1,18 +1,18 @@
 import { parseInput } from "@/server/lib/validation";
 import {
-  joinGroupInputSchema,
-  groupIdInputSchema,
-  createPeladaInputSchema,
-  updatePeladaStatusInputSchema,
-  peladaIdInputSchema,
-} from "@/server/modules/group/schema";
-import {
   joinGroupByInviteCode,
   getGroupDetails,
   createPelada,
   updatePeladaStatus,
   getPeladaDetails,
 } from "@/server/modules/group/service";
+import {
+  joinGroupInputSchema,
+  groupIdInputSchema,
+  createPeladaInputSchema,
+  updatePeladaStatusInputSchema,
+  peladaIdInputSchema,
+} from "@/server/modules/group/schema";
 
 export const groupRouter = {
   async joinByInviteCode(input: unknown) {

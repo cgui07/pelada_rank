@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { X, ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useState, useRef, useEffect } from "react";
+import { X, ChevronDown, Check } from "lucide-react";
 
 export interface MultiSelectOption {
   value: string;

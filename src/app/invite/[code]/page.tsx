@@ -1,6 +1,6 @@
-import { getGroupByInviteCode } from "@/server/modules/group/service";
 import { notFound } from "next/navigation";
 import { InviteClient } from "./invite-client";
+import { getGroupByInviteCode } from "@/server/modules/group/service";
 
 interface InvitePageProps {
   params: Promise<{ code: string }>;

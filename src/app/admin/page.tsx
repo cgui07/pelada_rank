@@ -1,7 +1,7 @@
-import { getCurrentUserServer } from "@/lib/api/server/auth-server";
-import { getAllGroupsServer } from "@/lib/api/server/admin-server";
 import { redirect } from "next/navigation";
 import { AdminClient } from "./admin-client";
+import { getAllGroupsServer } from "@/lib/api/server/admin-server";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
 
 export default async function AdminPage() {
   const user = await getCurrentUserServer();

@@ -1,11 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { StarRating } from "@/components/ui/star-rating";
-import { PlayerAvatar } from "@/components/ui/player-avatar";
-import { Spinner } from "@/components/ui/spinner";
-import { CheckCircle, Save, XCircle } from "lucide-react";
 import type { PeladaParticipant } from "./types";
+import { Spinner } from "@/components/ui/spinner";
+import { StarRating } from "@/components/ui/star-rating";
+import { CheckCircle, Save, XCircle } from "lucide-react";
+import { PlayerAvatar } from "@/components/ui/player-avatar";
 
 interface PeladaVotingSectionProps {
   othersToRate: PeladaParticipant[];

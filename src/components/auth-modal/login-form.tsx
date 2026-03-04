@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
+import { PinInput } from "./pin-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogIn, XCircle } from "lucide-react";
+import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { login } from "@/lib/api/client/auth-client";
-import { LogIn, XCircle } from "lucide-react";
-import { PinInput } from "./pin-input";
 
 interface LoginFormProps {
   onSuccess: () => void;

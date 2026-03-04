@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { SESSION_COOKIE_NAME, SESSION_EXPIRY_DAYS } from "./constants";
+import { SignJWT, jwtVerify } from "jose";
 import { getJwtSecretOrThrow } from "./env";
+import { SESSION_COOKIE_NAME, SESSION_EXPIRY_DAYS } from "./constants";
 
 export async function hashPin(pin: string): Promise<string> {
   return bcrypt.hash(pin, 10);

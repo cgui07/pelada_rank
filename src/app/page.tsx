@@ -1,7 +1,7 @@
-import { getCurrentUserServer } from "@/lib/api/server/auth-server";
-import { getLatestGroupMembership } from "@/server/modules/group/service";
 import { redirect } from "next/navigation";
 import { HomeClient } from "./home-client";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
+import { getLatestGroupMembership } from "@/server/modules/group/service";
 
 export default async function HomePage() {
   const user = await getCurrentUserServer();

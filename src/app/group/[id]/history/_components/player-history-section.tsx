@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { PlayerAvatar } from "@/components/ui/player-avatar";
 import { Spinner } from "@/components/ui/spinner";
+import type { PlayerHistoryResult } from "./types";
+import { PlayerAvatar } from "@/components/ui/player-avatar";
 import {
   Calendar,
   Minus,
@@ -10,8 +12,6 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
-import Link from "next/link";
-import type { PlayerHistoryResult } from "./types";
 
 interface PlayerHistorySectionProps {
   isPending: boolean;

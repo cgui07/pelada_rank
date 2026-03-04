@@ -1,10 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { logout } from "@/lib/api/client/auth-client";
+import type { PeladaStatus } from "@/lib/domain/pelada";
 import { PlayerAvatar } from "@/components/ui/player-avatar";
 import {
   Plus,
@@ -19,9 +22,6 @@ import {
   Vote,
   Lock,
 } from "lucide-react";
-import { logout } from "@/lib/api/client/auth-client";
-import type { PeladaStatus } from "@/lib/domain/pelada";
-import Link from "next/link";
 
 interface GroupDashboardClientProps {
   groupId: string;

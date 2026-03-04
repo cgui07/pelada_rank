@@ -1,10 +1,10 @@
 "use client";
 
+import { Star, Trophy } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { PlayerAvatar } from "@/components/ui/player-avatar";
-import { Star, Trophy } from "lucide-react";
 import type { LeaderboardPlayer } from "./types";
+import { PlayerAvatar } from "@/components/ui/player-avatar";
 
 interface LeaderboardSectionProps {
   leaderboard: LeaderboardPlayer[];

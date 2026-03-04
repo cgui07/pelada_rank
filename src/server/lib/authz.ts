@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { getSession, type SessionPayload } from "@/lib/auth";
 import { ApiRouteError } from "@/server/lib/api-handler";
+import { getSession, type SessionPayload } from "@/lib/auth";
 
 export async function requireSession(): Promise<SessionPayload> {
   const session = await getSession();

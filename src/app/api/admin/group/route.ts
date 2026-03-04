@@ -1,5 +1,5 @@
-import { handleApiRoute, readJsonBody } from "@/server/lib/api-handler";
 import { adminRouter } from "@/server/modules/admin/router";
+import { handleApiRoute, readJsonBody } from "@/server/lib/api-handler";
 
 export async function GET() {
   return handleApiRoute(async () => adminRouter.getAllGroups());

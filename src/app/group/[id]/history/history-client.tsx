@@ -1,12 +1,12 @@
 ﻿"use client";
 
-import { useEffect, useState, useTransition } from "react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { getPlayerHistory } from "@/lib/actions/history";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { ClosedPeladasSection } from "./_components/closed-peladas-section";
+import { useEffect, useState, useTransition } from "react";
 import { LeaderboardSection } from "./_components/leaderboard-section";
+import { ClosedPeladasSection } from "./_components/closed-peladas-section";
 import { PlayerHistorySection } from "./_components/player-history-section";
 import type {
   HistoryPeladaItem,

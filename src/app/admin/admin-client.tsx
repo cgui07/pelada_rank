@@ -1,14 +1,14 @@
 ﻿"use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Shield } from "lucide-react";
 import Link from "next/link";
-import { AuditLogSection } from "./_components/audit-log-section";
-import { CreateGroupSection } from "./_components/create-group-section";
-import { GroupsListSection } from "./_components/groups-list-section";
-import { PinResetSection } from "./_components/pin-reset-section";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Shield } from "lucide-react";
 import type { GroupItem } from "./_components/types";
+import { Separator } from "@/components/ui/separator";
+import { AuditLogSection } from "./_components/audit-log-section";
+import { PinResetSection } from "./_components/pin-reset-section";
+import { GroupsListSection } from "./_components/groups-list-section";
+import { CreateGroupSection } from "./_components/create-group-section";
 
 interface AdminClientProps {
   currentUsername: string;

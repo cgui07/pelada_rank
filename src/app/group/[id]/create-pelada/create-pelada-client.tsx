@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { createPelada } from "@/lib/api/client/group-client";
 import { ArrowLeft, Zap, XCircle } from "lucide-react";
-import Link from "next/link";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { createPelada } from "@/lib/api/client/group-client";
 
 interface CreatePeladaClientProps {
   groupId: string;

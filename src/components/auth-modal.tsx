@@ -1,6 +1,9 @@
 ﻿"use client";
 
 import { useState } from "react";
+import { Shield } from "lucide-react";
+import { LoginForm } from "@/components/auth-modal/login-form";
+import { RegisterForm } from "@/components/auth-modal/register-form";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Shield } from "lucide-react";
-import { LoginForm } from "@/components/auth-modal/login-form";
-import { RegisterForm } from "@/components/auth-modal/register-form";
 
 interface AuthModalProps {
   open: boolean;

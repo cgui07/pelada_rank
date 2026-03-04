@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { ClipboardList } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { getAuditLog } from "@/lib/api/client/admin-client";
-import { ClipboardList } from "lucide-react";
 
 export function AuditLogSection() {
   const [logs, setLogs] = useState<

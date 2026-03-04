@@ -1,9 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import type { PeladaHeaderProps } from "./types";
 import { ArrowLeft, Calendar, Users } from "lucide-react";
-import Link from "next/link";
 
 export function PeladaHeader({
   peladaName,

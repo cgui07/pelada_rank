@@ -1,15 +1,15 @@
 ﻿"use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { submitAllRatings } from "@/lib/actions/rating";
-import { updatePeladaStatus } from "@/lib/api/client/group-client";
 import type { PeladaStatus } from "@/lib/domain/pelada";
-import { PeladaAdminActions } from "./_components/pelada-admin-actions";
 import { PeladaHeader } from "./_components/pelada-header";
-import { PeladaResultsSection } from "./_components/pelada-results-section";
+import { updatePeladaStatus } from "@/lib/api/client/group-client";
+import { PeladaAdminActions } from "./_components/pelada-admin-actions";
 import { PeladaVotingSection } from "./_components/pelada-voting-section";
+import { PeladaResultsSection } from "./_components/pelada-results-section";
 import type { PeladaParticipant, PeladaResultRow } from "./_components/types";
 
 interface PeladaClientProps {

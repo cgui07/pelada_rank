@@ -1,10 +1,10 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
-import { PlayerAvatar } from "@/components/ui/player-avatar";
-import { Podium } from "@/components/ui/podium";
 import { Star } from "lucide-react";
 import type { PeladaResultRow } from "./types";
+import { Podium } from "@/components/ui/podium";
+import { Separator } from "@/components/ui/separator";
+import { PlayerAvatar } from "@/components/ui/player-avatar";
 
 interface PeladaResultsSectionProps {
   results: PeladaResultRow[];

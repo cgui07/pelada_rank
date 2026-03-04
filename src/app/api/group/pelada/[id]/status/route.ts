@@ -1,6 +1,6 @@
-import { handleApiRoute, readJsonBody } from "@/server/lib/api-handler";
-import { groupRouter } from "@/server/modules/group/router";
 import type { PeladaStatus } from "@/lib/domain/pelada";
+import { groupRouter } from "@/server/modules/group/router";
+import { handleApiRoute, readJsonBody } from "@/server/lib/api-handler";
 
 interface PeladaStatusRouteContext {
   params: Promise<{ id: string }>;

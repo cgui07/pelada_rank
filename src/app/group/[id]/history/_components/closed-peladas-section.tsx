@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
 import type { HistoryPeladaItem } from "./types";
 
 interface ClosedPeladasSectionProps {

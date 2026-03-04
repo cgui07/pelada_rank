@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { PinInput } from "./pin-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useState, useTransition } from "react";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { register } from "@/lib/api/client/auth-client";
-import { cn } from "@/lib/utils";
-import { CheckCircle, Shield, User, UserPlus, XCircle } from "lucide-react";
-import { PinInput } from "./pin-input";
 import { useUsernameAvailability } from "./use-username-availability";
+import { CheckCircle, Shield, User, UserPlus, XCircle } from "lucide-react";
 
 interface RegisterFormProps {
   onSuccess: () => void;
