@@ -1,7 +1,7 @@
-import { getCurrentUserServer } from "@/lib/api/server/auth-server";
-import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 import { notFound, redirect } from "next/navigation";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
 import { GroupDashboardClient } from "@/app/group/[id]/group-client";
+import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 
 interface AdminGroupPageProps {
   params: Promise<{ id: string }>;

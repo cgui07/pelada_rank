@@ -1,7 +1,7 @@
-import { getCurrentUserServer } from "@/lib/api/server/auth-server";
-import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 import { notFound, redirect } from "next/navigation";
 import { CreatePeladaClient } from "./create-pelada-client";
+import { getCurrentUserServer } from "@/lib/api/server/auth-server";
+import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 
 interface CreatePeladaPageProps {
   params: Promise<{ id: string }>;

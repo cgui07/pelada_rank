@@ -1,8 +1,8 @@
-import { getGroupDetailsServer } from "@/lib/api/server/group-server";
+import { HistoryClient } from "./history-client";
+import { notFound, redirect } from "next/navigation";
 import { getGroupLeaderboard } from "@/lib/actions/history";
 import { getCurrentUserServer } from "@/lib/api/server/auth-server";
-import { notFound, redirect } from "next/navigation";
-import { HistoryClient } from "./history-client";
+import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 
 interface HistoryPageProps {
   params: Promise<{ id: string }>;

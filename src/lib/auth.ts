@@ -1,11 +1,8 @@
 import bcrypt from "bcryptjs";
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { SignJWT, jwtVerify } from "jose";
+import { getJwtSecretOrThrow } from "./env";
 import { SESSION_COOKIE_NAME, SESSION_EXPIRY_DAYS } from "./constants";
-
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "pelada-rank-secret-change-in-production",
-);
 
 export async function hashPin(pin: string): Promise<string> {
   return bcrypt.hash(pin, 10);
@@ -21,12 +18,16 @@ export interface SessionPayload {
   isAdmin: boolean;
 }
 
+function isLikelyJwt(token: string): boolean {
+  return /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(token);
+}
+
 export async function createSession(payload: SessionPayload): Promise<string> {
   const token = await new SignJWT(payload as unknown as Record<string, unknown>)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${SESSION_EXPIRY_DAYS}d`)
-    .sign(JWT_SECRET);
+    .sign(getJwtSecretOrThrow());
 
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, token, {
@@ -45,11 +46,23 @@ export async function getSession(): Promise<SessionPayload | null> {
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return null;
 
+  if (!isLikelyJwt(token)) {
+    return null;
+  }
+
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecretOrThrow());
+
+    const userId = payload.userId;
+    const username = payload.username;
+
+    if (typeof userId !== "string" || typeof username !== "string") {
+      return null;
+    }
+
     return {
-      userId: payload.userId as string,
-      username: payload.username as string,
+      userId,
+      username,
       isAdmin: (payload.isAdmin as boolean) ?? false,
     };
   } catch {

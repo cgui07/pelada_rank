@@ -1,5 +1,7 @@
 import { db } from "@/lib/db";
-import { getSession, hashPin, type SessionPayload } from "@/lib/auth";
+import { hashPin } from "@/lib/auth";
+import { randomInt } from "node:crypto";
+import { requireAdminSession } from "@/server/lib/authz";
 import { ApiRouteError } from "@/server/lib/api-handler";
 
 export interface SetPinInput {
@@ -12,23 +14,40 @@ export interface CreateGroupInput {
   inviteCode: string;
 }
 
-async function requireAdminSession(): Promise<SessionPayload> {
-  const session = await getSession();
+async function requireMemberOfAdminGroups(
+  adminUserId: string,
+  targetUserId: string,
+): Promise<void> {
+  const membership = await db.group_members.findFirst({
+    where: {
+      user_id: targetUserId,
+      groups: { owner_id: adminUserId },
+    },
+  });
 
-  if (!session || !session.isAdmin) {
-    throw new ApiRouteError("Nao autorizado", 403);
+  if (!membership) {
+    throw new ApiRouteError(
+      "Usuario nao pertence a nenhum dos seus grupos",
+      403,
+      "FORBIDDEN",
+    );
   }
-
-  return session;
 }
 
 export async function searchUser(username: string) {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
-  return db.users.findFirst({
-    where: { username: { equals: username, mode: "insensitive" } },
+  const user = await db.users.findFirst({
+    where: {
+      username: { equals: username, mode: "insensitive" },
+      group_members: {
+        some: { groups: { owner_id: session.userId } },
+      },
+    },
     select: { id: true, username: true, created_at: true },
   });
+
+  return user;
 }
 
 export async function adminSetPin(data: SetPinInput): Promise<string> {
@@ -38,8 +57,10 @@ export async function adminSetPin(data: SetPinInput): Promise<string> {
     where: { username: { equals: data.targetUsername, mode: "insensitive" } },
   });
   if (!user) {
-    throw new ApiRouteError("Usuario nao encontrado", 404);
+    throw new ApiRouteError("Usuario nao encontrado", 404, "NOT_FOUND");
   }
+
+  await requireMemberOfAdminGroups(session.userId, user.id);
 
   const hash = await hashPin(data.newPin);
   await db.users.update({
@@ -65,10 +86,12 @@ export async function adminGeneratePin(targetUsername: string): Promise<string> 
     where: { username: { equals: targetUsername, mode: "insensitive" } },
   });
   if (!user) {
-    throw new ApiRouteError("Usuario nao encontrado", 404);
+    throw new ApiRouteError("Usuario nao encontrado", 404, "NOT_FOUND");
   }
 
-  const newPin = String(Math.floor(1000 + Math.random() * 9000));
+  await requireMemberOfAdminGroups(session.userId, user.id);
+
+  const newPin = String(randomInt(1000, 10000));
   const hash = await hashPin(newPin);
 
   await db.users.update({
@@ -88,9 +111,10 @@ export async function adminGeneratePin(targetUsername: string): Promise<string> 
 }
 
 export async function getAuditLog() {
-  await requireAdminSession();
+  const session = await requireAdminSession();
 
   return db.admin_audit_log.findMany({
+    where: { admin_username: session.username },
     orderBy: { created_at: "desc" },
     take: 50,
   });
@@ -99,23 +123,30 @@ export async function getAuditLog() {
 export async function createGroup(data: CreateGroupInput): Promise<string> {
   const session = await requireAdminSession();
 
-  const existing = await db.groups.findUnique({
-    where: { invite_code: data.inviteCode },
-  });
-  if (existing) {
-    throw new ApiRouteError("Codigo de convite ja existe", 409);
-  }
+  const group = await db.$transaction(async (tx) => {
+    const existing = await tx.groups.findUnique({
+      where: { invite_code: data.inviteCode },
+      select: { id: true },
+    });
 
-  const group = await db.groups.create({
-    data: {
-      name: data.name,
-      invite_code: data.inviteCode,
-      owner_id: session.userId,
-    },
-  });
+    if (existing) {
+      throw new ApiRouteError("Codigo de convite ja existe", 409, "CONFLICT");
+    }
 
-  await db.group_members.create({
-    data: { group_id: group.id, user_id: session.userId },
+    const createdGroup = await tx.groups.create({
+      data: {
+        name: data.name,
+        invite_code: data.inviteCode,
+        owner_id: session.userId,
+      },
+      select: { id: true },
+    });
+
+    await tx.group_members.create({
+      data: { group_id: createdGroup.id, user_id: session.userId },
+    });
+
+    return createdGroup;
   });
 
   return group.id;

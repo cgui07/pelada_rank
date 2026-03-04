@@ -1,4 +1,4 @@
-import { serverHttpRequest } from "@/lib/api/server-http-client";
+import { getAllGroups } from "@/server/modules/admin/service";
 
 export interface AdminGroupDto {
   id: string;
@@ -12,11 +12,13 @@ export interface AdminGroupDto {
 }
 
 export async function getAllGroupsServer(): Promise<AdminGroupDto[]> {
-  const response = await serverHttpRequest<AdminGroupDto[]>("/api/admin/group");
-
-  if (!response.success) {
+  try {
+    const groups = await getAllGroups();
+    return groups.map((group) => ({
+      ...group,
+      created_at: group.created_at.toISOString(),
+    }));
+  } catch {
     return [];
   }
-
-  return response.data;
 }

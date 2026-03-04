@@ -1,6 +1,6 @@
+import { notFound, redirect } from "next/navigation";
 import { getCurrentUserServer } from "@/lib/api/server/auth-server";
 import { getGroupDetailsServer } from "@/lib/api/server/group-server";
-import { notFound, redirect } from "next/navigation";
 import { CreatePeladaClient } from "@/app/group/[id]/create-pelada/create-pelada-client";
 
 interface AdminCreatePeladaPageProps {

@@ -1,4 +1,5 @@
 import { httpRequest } from "@/lib/api/http-client";
+import type { PeladaStatus } from "@/lib/domain/pelada";
 
 export async function joinGroupByInviteCode(inviteCode: string): Promise<{
   success: boolean;
@@ -43,7 +44,7 @@ export async function createPelada(formData: {
 
 export async function updatePeladaStatus(
   peladaId: string,
-  status: "open" | "voting" | "closed",
+  status: PeladaStatus,
 ): Promise<{ success: boolean; error?: string }> {
   const response = await httpRequest<null>(`/api/group/pelada/${peladaId}/status`, {
     method: "PATCH",

@@ -6,6 +6,8 @@ export type ApiResponse<T> =
   | {
       success: false;
       error: string;
+      code?: string;
+      details?: unknown;
     };
 
 export function isApiSuccess<T>(

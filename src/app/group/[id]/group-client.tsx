@@ -1,10 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { logout } from "@/lib/api/client/auth-client";
+import type { PeladaStatus } from "@/lib/domain/pelada";
 import { PlayerAvatar } from "@/components/ui/player-avatar";
 import {
   Plus,
@@ -19,8 +22,6 @@ import {
   Vote,
   Lock,
 } from "lucide-react";
-import { logout } from "@/lib/api/client/auth-client";
-import Link from "next/link";
 
 interface GroupDashboardClientProps {
   groupId: string;
@@ -31,7 +32,7 @@ interface GroupDashboardClientProps {
     id: string;
     name: string;
     playedAt: string;
-    status: string;
+    status: PeladaStatus;
     createdBy: string;
     participantCount: number;
     ratingCount: number;
@@ -42,10 +43,7 @@ interface GroupDashboardClientProps {
   routePrefix?: string;
 }
 
-const statusConfig: Record<
-  string,
-  { label: string; color: string; icon: React.ReactNode }
-> = {
+const statusConfig: Record<PeladaStatus, { label: string; color: string; icon: React.ReactNode }> = {
   open: {
     label: "Aberta",
     color: "bg-success/10 text-success border-success/30",
@@ -173,7 +171,7 @@ export function GroupDashboardClient({
           ) : (
             <div className="space-y-2">
               {peladas.map((pelada) => {
-                const sc = statusConfig[pelada.status] || statusConfig.open;
+                const sc = statusConfig[pelada.status];
                 return (
                   <Link
                     key={pelada.id}

@@ -12,9 +12,10 @@ export const generatePinInputSchema = z.object({
 });
 
 export const createGroupInputSchema = z.object({
-  name: z.string().min(1, "Nome do grupo obrigatorio").max(100),
+  name: z.string().trim().min(1, "Nome do grupo obrigatorio").max(100),
   inviteCode: z
     .string()
+    .trim()
     .min(1, "Codigo de convite obrigatorio")
     .max(20)
     .regex(/^[a-zA-Z0-9_-]+$/, "Codigo de convite invalido"),

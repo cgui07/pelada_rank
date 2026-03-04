@@ -1,7 +1,7 @@
+import { PeladaClient } from "./pelada-client";
+import { notFound, redirect } from "next/navigation";
 import { getCurrentUserServer } from "@/lib/api/server/auth-server";
 import { getPeladaDetailsServer } from "@/lib/api/server/group-server";
-import { notFound, redirect } from "next/navigation";
-import { PeladaClient } from "./pelada-client";
 
 interface PeladaPageProps {
   params: Promise<{ id: string }>;

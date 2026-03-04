@@ -1,7 +1,7 @@
-import { getGroupDetailsServer } from "@/lib/api/server/group-server";
+import { notFound, redirect } from "next/navigation";
 import { getGroupLeaderboard } from "@/lib/actions/history";
 import { getCurrentUserServer } from "@/lib/api/server/auth-server";
-import { notFound, redirect } from "next/navigation";
+import { getGroupDetailsServer } from "@/lib/api/server/group-server";
 import { HistoryClient } from "@/app/group/[id]/history/history-client";
 
 interface AdminHistoryPageProps {

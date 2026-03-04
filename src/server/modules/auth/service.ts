@@ -1,4 +1,6 @@
 import { db } from "@/lib/db";
+import { ApiRouteError } from "@/server/lib/api-handler";
+import { LOGIN_WINDOW_MINUTES, MAX_LOGIN_ATTEMPTS } from "@/lib/constants";
 import {
   hashPin,
   verifyPin,
@@ -6,8 +8,6 @@ import {
   destroySession,
   getSession,
 } from "@/lib/auth";
-import { LOGIN_WINDOW_MINUTES, MAX_LOGIN_ATTEMPTS } from "@/lib/constants";
-import { ApiRouteError } from "@/server/lib/api-handler";
 
 export interface LoginInput {
   username: string;
@@ -18,7 +18,7 @@ export interface RegisterInput {
   username: string;
   pin: string;
   confirmPin: string;
-  isAdmin?: boolean;
+  role: "user" | "admin";
 }
 
 async function checkRateLimit(username: string, ip: string): Promise<boolean> {
@@ -98,16 +98,21 @@ export async function registerUser(data: RegisterInput): Promise<void> {
     where: { username: { equals: data.username, mode: "insensitive" } },
   });
   if (existing) {
-    throw new ApiRouteError("Este username ja esta em uso", 409);
+    throw new ApiRouteError(
+      "Este nome do usuário já está em uso",
+      409,
+      "CONFLICT",
+    );
   }
 
   const pinHash = await hashPin(data.pin);
+  const isAdmin = data.role === "admin";
 
   const user = await db.users.create({
     data: {
       username: data.username,
       pin_hash: pinHash,
-      is_admin: data.isAdmin === true,
+      is_admin: isAdmin,
     },
   });
 
