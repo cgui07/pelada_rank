@@ -1,10 +1,13 @@
 ﻿"use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { GroupItem } from "./_components/types";
+import { logout } from "@/lib/api/client/auth-client";
 import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, LogOut, Shield } from "lucide-react";
 import { AuditLogSection } from "./_components/audit-log-section";
 import { PinResetSection } from "./_components/pin-reset-section";
 import { GroupsListSection } from "./_components/groups-list-section";
@@ -16,6 +19,8 @@ interface AdminClientProps {
 }
 
 export function AdminClient({ currentUsername, groups }: AdminClientProps) {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
@@ -25,9 +30,21 @@ export function AdminClient({ currentUsername, groups }: AdminClientProps) {
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <Shield className="h-5 w-5 text-brand" />
-            <h1 className="text-xl font-bold">Painel Admin</h1>
+            <div className="text-xl font-bold">Painel Admin</div>
           </div>
-          <Badge variant="secondary">{currentUsername}</Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary">{currentUsername}</Badge>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                await logout();
+                router.push("/");
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
