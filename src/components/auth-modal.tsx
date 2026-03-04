@@ -38,7 +38,7 @@ export function AuthModal({ open, onSuccess }: AuthModalProps) {
           </DialogTitle>
           <DialogDescription className="text-center">
             {mode === "login"
-              ? "Entre com seu username e PIN de 4 digitos"
+              ? "Entre com seu nome de usuário e PIN de 4 digitos"
               : "Crie sua conta para participar da pelada"}
           </DialogDescription>
         </DialogHeader>

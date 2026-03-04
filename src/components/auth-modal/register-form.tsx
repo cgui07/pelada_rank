@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { register } from "@/lib/api/client/auth-client";
 import { CheckCircle, UserPlus, XCircle } from "lucide-react";
+import { PinInput } from "./pin-input";
 import { useUsernameAvailability } from "./use-username-availability";
 
 interface RegisterFormProps {
@@ -27,7 +28,7 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
     setError("");
 
     if (usernameStatus === "taken") {
-      setError("Este username ja esta em uso");
+      setError("Este nome do usuário já está em uso");
       return;
     }
 
@@ -45,11 +46,11 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="register-username">Username</Label>
+        <Label htmlFor="register-username">Nome do usuário</Label>
         <div className="relative">
           <Input
             id="register-username"
-            placeholder="seu_username"
+            placeholder="Seu nome de usuário"
             value={username}
             onChange={(e) => {
               const normalized = scheduleCheck(e.target.value);
@@ -69,34 +70,28 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
           </div>
         </div>
         {usernameStatus === "taken" && (
-          <p className="text-xs text-danger">Username ja esta em uso. Escolha outro.</p>
+          <p className="text-xs text-danger">
+            Nome do usuário já está em uso. Escolha outro.
+          </p>
         )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="register-pin">PIN (4 digitos)</Label>
-        <Input
+        <PinInput
           id="register-pin"
-          type="password"
-          inputMode="numeric"
-          maxLength={4}
-          placeholder="****"
           value={pin}
-          onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          onChange={setPin}
           autoComplete="new-password"
         />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="register-confirm">Confirmar PIN</Label>
-        <Input
+        <PinInput
           id="register-confirm"
-          type="password"
-          inputMode="numeric"
-          maxLength={4}
-          placeholder="****"
           value={confirmPin}
-          onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          onChange={setConfirmPin}
           autoComplete="new-password"
         />
         {confirmPin.length === 4 && pin !== confirmPin && (
@@ -140,4 +135,3 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
     </form>
   );
 }
-

@@ -106,7 +106,7 @@ export function PinResetSection() {
 
       <div className="flex gap-2 mb-4">
         <Input
-          placeholder="Buscar por username..."
+          placeholder="Buscar por nome do usuário..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -194,4 +194,3 @@ export function PinResetSection() {
     </section>
   );
 }
-

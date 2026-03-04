@@ -4,9 +4,12 @@ import { PIN_LENGTH, MIN_STARS, MAX_STARS } from "./constants";
 export const usernameSchema = z
   .string()
   .trim()
-  .min(3, "Username deve ter pelo menos 3 caracteres")
-  .max(30, "Username pode ter no maximo 30 caracteres")
-  .regex(/^[a-zA-Z0-9_]+$/, "Username pode conter apenas letras, numeros e _");
+  .min(3, "Nome do usuário deve ter pelo menos 3 caracteres")
+  .max(30, "Nome do usuário pode ter no maximo 30 caracteres")
+  .regex(
+    /^[a-zA-Z0-9_]+$/,
+    "Nome do usuário pode conter apenas letras, numeros e sublinhado",
+  );
 
 export const pinSchema = z
   .string()

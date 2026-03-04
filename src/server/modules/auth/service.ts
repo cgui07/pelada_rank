@@ -101,7 +101,11 @@ export async function registerUser(data: RegisterInput): Promise<void> {
     where: { username: { equals: data.username, mode: "insensitive" } },
   });
   if (existing) {
-    throw new ApiRouteError("Este username ja esta em uso", 409, "CONFLICT");
+    throw new ApiRouteError(
+      "Este nome do usuário já está em uso",
+      409,
+      "CONFLICT",
+    );
   }
 
   const pinHash = await hashPin(data.pin);

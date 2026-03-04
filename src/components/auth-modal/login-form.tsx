@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { login } from "@/lib/api/client/auth-client";
 import { LogIn, XCircle } from "lucide-react";
+import { PinInput } from "./pin-input";
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -37,10 +38,10 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="login-username">Username</Label>
+        <Label htmlFor="login-username">Nome do usuário</Label>
         <Input
           id="login-username"
-          placeholder="seu_username"
+          placeholder="Seu nome de usuário"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           autoComplete="username"
@@ -50,14 +51,10 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="login-pin">PIN (4 digitos)</Label>
-        <Input
+        <PinInput
           id="login-pin"
-          type="password"
-          inputMode="numeric"
-          maxLength={4}
-          placeholder="****"
           value={pin}
-          onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          onChange={setPin}
           autoComplete="current-password"
         />
       </div>
@@ -94,4 +91,3 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
     </form>
   );
 }
-
