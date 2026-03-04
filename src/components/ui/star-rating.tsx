@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
+import { Button } from "./button";
 
 interface StarRatingProps {
   value: number;
@@ -36,9 +37,9 @@ export function StarRating({
       aria-label="Avaliação por estrelas"
     >
       {[1, 2, 3, 4, 5].map((star) => (
-        <button
+        <Button
+          variant="ghost"
           key={star}
-          type="button"
           disabled={readonly}
           className={cn(
             "transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm",
@@ -66,7 +67,7 @@ export function StarRating({
                 : "fill-transparent text-star-empty",
             )}
           />
-        </button>
+        </Button>
       ))}
     </div>
   );

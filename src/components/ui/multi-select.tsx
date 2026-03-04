@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useState, useRef, useEffect } from "react";
 import { X, ChevronDown, Check } from "lucide-react";
+import { Button } from "./button";
 
 export interface MultiSelectOption {
   value: string;
@@ -82,8 +83,8 @@ export function MultiSelect({
             className="gap-1 pr-1 text-xs"
           >
             {opt.label}
-            <button
-              type="button"
+            <Button
+              variant="ghost"
               className="ml-0.5 rounded-full hover:bg-muted-foreground/20 p-0.5"
               onClick={(e) => {
                 e.stopPropagation();
@@ -92,7 +93,7 @@ export function MultiSelect({
               aria-label={`Remover ${opt.label}`}
             >
               <X className="h-3 w-3" />
-            </button>
+            </Button>
           </Badge>
         ))}
         <input
@@ -118,7 +119,7 @@ export function MultiSelect({
               filtered.map((opt) => {
                 const isSelected = selected.includes(opt.value);
                 return (
-                  <button
+                  <Button
                     key={opt.value}
                     type="button"
                     className={cn(
@@ -140,7 +141,7 @@ export function MultiSelect({
                       {isSelected && <Check className="h-3 w-3" />}
                     </div>
                     {opt.label}
-                  </button>
+                  </Button>
                 );
               })
             )}

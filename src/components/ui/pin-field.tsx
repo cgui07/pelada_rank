@@ -4,6 +4,7 @@ import { Input } from "./input";
 import { useState } from "react";
 import { FormField } from "./form-field";
 import { Eye, EyeOff } from "lucide-react";
+import { Button } from "./button";
 
 interface PinFieldProps {
   id: string;
@@ -46,13 +47,15 @@ export function PinField({
           maxLength={4}
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 4))}
+          onChange={(e) =>
+            onChange(e.target.value.replace(/\D/g, "").slice(0, 4))
+          }
           autoComplete={autoComplete}
           disabled={disabled}
           className="pr-10"
         />
-        <button
-          type="button"
+        <Button
+          variant="ghost"
           onClick={() => setShowPin((prev) => !prev)}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           aria-label={showPin ? "Ocultar PIN" : "Mostrar PIN"}
@@ -62,7 +65,7 @@ export function PinField({
           ) : (
             <Eye className="h-4 w-4" />
           )}
-        </button>
+        </Button>
       </div>
     </FormField>
   );
