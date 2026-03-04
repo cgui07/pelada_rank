@@ -1,12 +1,12 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { getSession, isAdmin, hashPin } from "@/lib/auth";
-import { resetPinSchema, pinSchema } from "@/lib/validations";
+import { getSession, hashPin } from "@/lib/auth";
+import { resetPinSchema } from "@/lib/validations";
 
 export async function searchUser(username: string) {
   const session = await getSession();
-  if (!session || !isAdmin(session.username)) return null;
+  if (!session || !session.isAdmin) return null;
 
   const user = await db.users.findFirst({
     where: { username: { equals: username, mode: "insensitive" } },
@@ -21,7 +21,7 @@ export async function adminSetPin(data: {
   newPin: string;
 }): Promise<{ success: boolean; pin?: string; error?: string }> {
   const session = await getSession();
-  if (!session || !isAdmin(session.username)) {
+  if (!session || !session.isAdmin) {
     return { success: false, error: "Não autorizado" };
   }
 
@@ -60,7 +60,7 @@ export async function adminGeneratePin(
   targetUsername: string,
 ): Promise<{ success: boolean; pin?: string; error?: string }> {
   const session = await getSession();
-  if (!session || !isAdmin(session.username)) {
+  if (!session || !session.isAdmin) {
     return { success: false, error: "Não autorizado" };
   }
 
@@ -92,7 +92,7 @@ export async function adminGeneratePin(
 
 export async function getAuditLog() {
   const session = await getSession();
-  if (!session || !isAdmin(session.username)) return [];
+  if (!session || !session.isAdmin) return [];
 
   return db.admin_audit_log.findMany({
     orderBy: { created_at: "desc" },
@@ -105,7 +105,7 @@ export async function createGroup(data: {
   inviteCode: string;
 }): Promise<{ success: boolean; groupId?: string; error?: string }> {
   const session = await getSession();
-  if (!session || !isAdmin(session.username)) {
+  if (!session || !session.isAdmin) {
     return { success: false, error: "Não autorizado" };
   }
 
@@ -120,6 +120,7 @@ export async function createGroup(data: {
     data: {
       name: data.name,
       invite_code: data.inviteCode,
+      owner_id: session.userId,
     },
   });
 
@@ -132,9 +133,10 @@ export async function createGroup(data: {
 
 export async function getAllGroups() {
   const session = await getSession();
-  if (!session || !isAdmin(session.username)) return [];
+  if (!session || !session.isAdmin) return [];
 
   return db.groups.findMany({
+    where: { owner_id: session.userId },
     orderBy: { created_at: "desc" },
     include: {
       _count: { select: { group_members: true, peladas: true } },

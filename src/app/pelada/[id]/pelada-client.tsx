@@ -43,6 +43,7 @@ interface PeladaClientProps {
     rank: number;
     totalRatings: number;
   }[];
+  routePrefix?: string;
 }
 
 export function PeladaClient({
@@ -58,6 +59,7 @@ export function PeladaClient({
   isCurrentUserAdmin,
   existingRatings,
   results,
+  routePrefix = "",
 }: PeladaClientProps) {
   const router = useRouter();
   const [ratings, setRatings] =
@@ -110,7 +112,7 @@ export function PeladaClient({
       <header className="border-b bg-card">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <Link
-            href={`/group/${groupId}`}
+            href={`${routePrefix}/group/${groupId}`}
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />

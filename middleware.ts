@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
-import { SESSION_COOKIE_NAME, ADMIN_USERNAMES } from "@/lib/constants";
+import { SESSION_COOKIE_NAME } from "@/lib/constants";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "pelada-rank-secret-change-in-production",
@@ -36,8 +36,8 @@ export async function middleware(request: NextRequest) {
 
     // Admin route protection
     if (pathname.startsWith("/admin")) {
-      const username = payload.username as string;
-      if (!ADMIN_USERNAMES.includes(username.toLowerCase())) {
+      const isAdmin = payload.isAdmin as boolean;
+      if (!isAdmin) {
         return NextResponse.redirect(new URL("/", request.url));
       }
     }

@@ -1,11 +1,7 @@
 import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import {
-  SESSION_COOKIE_NAME,
-  SESSION_EXPIRY_DAYS,
-  ADMIN_USERNAMES,
-} from "./constants";
+import { SESSION_COOKIE_NAME, SESSION_EXPIRY_DAYS } from "./constants";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "pelada-rank-secret-change-in-production",
@@ -22,6 +18,7 @@ export async function verifyPin(pin: string, hash: string): Promise<boolean> {
 export interface SessionPayload {
   userId: string;
   username: string;
+  isAdmin: boolean;
 }
 
 export async function createSession(payload: SessionPayload): Promise<string> {
@@ -53,6 +50,7 @@ export async function getSession(): Promise<SessionPayload | null> {
     return {
       userId: payload.userId as string,
       username: payload.username as string,
+      isAdmin: (payload.isAdmin as boolean) ?? false,
     };
   } catch {
     return null;
@@ -62,8 +60,4 @@ export async function getSession(): Promise<SessionPayload | null> {
 export async function destroySession(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(SESSION_COOKIE_NAME);
-}
-
-export function isAdmin(username: string): boolean {
-  return ADMIN_USERNAMES.includes(username.toLowerCase());
 }

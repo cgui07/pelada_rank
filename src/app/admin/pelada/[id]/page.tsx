@@ -1,16 +1,18 @@
 import { getPeladaDetails } from "@/lib/actions/group";
 import { getCurrentUser } from "@/lib/actions/auth";
 import { notFound, redirect } from "next/navigation";
-import { PeladaClient } from "./pelada-client";
+import { PeladaClient } from "@/app/pelada/[id]/pelada-client";
 
-interface PeladaPageProps {
+interface AdminPeladaPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function PeladaPage({ params }: PeladaPageProps) {
+export default async function AdminPeladaPage({
+  params,
+}: AdminPeladaPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();
-  if (!user) redirect("/");
+  if (!user || !user.is_admin) redirect("/");
 
   const pelada = await getPeladaDetails(id);
   if (!pelada) notFound();
@@ -49,9 +51,10 @@ export default async function PeladaPage({ params }: PeladaPageProps) {
       currentUserId={user.id}
       currentUsername={user.username}
       isParticipant={isParticipant}
-      isCurrentUserAdmin={user.is_admin}
+      isCurrentUserAdmin
       existingRatings={existingRatings}
       results={results}
+      routePrefix="/admin"
     />
   );
 }

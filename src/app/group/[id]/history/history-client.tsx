@@ -34,8 +34,8 @@ interface HistoryClientProps {
     avgRating: number;
     gamesPlayed: number;
   }[];
-  members: { id: string; username: string }[];
   currentUserId: string;
+  routePrefix?: string;
 }
 
 export function HistoryClient({
@@ -43,8 +43,8 @@ export function HistoryClient({
   groupName,
   peladas,
   leaderboard,
-  members,
   currentUserId,
+  routePrefix = "",
 }: HistoryClientProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [playerData, setPlayerData] = useState<{
@@ -63,7 +63,6 @@ export function HistoryClient({
 
   useEffect(() => {
     if (!selectedPlayer) {
-      setPlayerData(null);
       return;
     }
 
@@ -82,7 +81,7 @@ export function HistoryClient({
       <header className="border-b bg-card">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <Link
-            href={`/group/${groupId}`}
+            href={`${routePrefix}/group/${groupId}`}
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
@@ -177,7 +176,7 @@ export function HistoryClient({
                       return (
                         <Link
                           key={r.peladaId}
-                          href={`/pelada/${r.peladaId}`}
+                          href={`${routePrefix}/pelada/${r.peladaId}`}
                           className="flex items-center gap-3 p-3 rounded-md border hover:bg-accent/50 transition-colors"
                         >
                           <div className="flex-1">
@@ -246,7 +245,7 @@ export function HistoryClient({
               {filteredPeladas.map((p) => (
                 <Link
                   key={p.id}
-                  href={`/pelada/${p.id}`}
+                  href={`${routePrefix}/pelada/${p.id}`}
                   className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
                   <div>

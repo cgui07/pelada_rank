@@ -100,7 +100,11 @@ export async function login(formData: {
   }
 
   await recordLoginAttempt(username, ip, true);
-  await createSession({ userId: user.id, username: user.username });
+  await createSession({
+    userId: user.id,
+    username: user.username,
+    isAdmin: user.is_admin,
+  });
 
   return { success: true };
 }
@@ -109,6 +113,7 @@ export async function register(formData: {
   username: string;
   pin: string;
   confirmPin: string;
+  isAdmin?: boolean;
 }): Promise<{ success: boolean; error?: string }> {
   const parsed = registerSchema.safeParse(formData);
   if (!parsed.success) {
@@ -130,10 +135,15 @@ export async function register(formData: {
     data: {
       username,
       pin_hash: pinHash,
+      is_admin: formData.isAdmin === true,
     },
   });
 
-  await createSession({ userId: user.id, username: user.username });
+  await createSession({
+    userId: user.id,
+    username: user.username,
+    isAdmin: user.is_admin,
+  });
 
   return { success: true };
 }
@@ -148,7 +158,7 @@ export async function getCurrentUser() {
 
   const user = await db.users.findUnique({
     where: { id: session.userId },
-    select: { id: true, username: true, created_at: true },
+    select: { id: true, username: true, is_admin: true, created_at: true },
   });
 
   return user;

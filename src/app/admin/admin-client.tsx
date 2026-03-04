@@ -107,7 +107,10 @@ function GroupsListSection({ groups }: { groups: GroupItem[] }) {
               key={group.id}
               className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
             >
-              <Link href={`/group/${group.id}`} className="flex-1 min-w-0">
+              <Link
+                href={`/admin/group/${group.id}`}
+                className="flex-1 min-w-0"
+              >
                 <div className="font-medium">{group.name}</div>
                 <div className="text-xs text-muted-foreground flex items-center gap-3 mt-0.5">
                   <span className="flex items-center gap-1">
@@ -140,7 +143,7 @@ function GroupsListSection({ groups }: { groups: GroupItem[] }) {
                     <Copy className="h-3.5 w-3.5" />
                   )}
                 </Button>
-                <Link href={`/group/${group.id}`}>
+                <Link href={`/admin/group/${group.id}`}>
                   <Button size="sm" variant="outline">
                     Abrir
                   </Button>

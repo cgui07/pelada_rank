@@ -15,12 +15,14 @@ interface CreatePeladaClientProps {
   groupId: string;
   groupName: string;
   members: { id: string; username: string }[];
+  routePrefix?: string;
 }
 
 export function CreatePeladaClient({
   groupId,
   groupName,
   members,
+  routePrefix = "",
 }: CreatePeladaClientProps) {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -60,7 +62,7 @@ export function CreatePeladaClient({
       });
 
       if (result.success && result.peladaId) {
-        router.push(`/pelada/${result.peladaId}`);
+        router.push(`${routePrefix}/pelada/${result.peladaId}`);
       } else {
         setError(result.error || "Erro ao criar pelada");
       }
@@ -72,7 +74,7 @@ export function CreatePeladaClient({
       <header className="border-b bg-card">
         <div className="max-w-2xl mx-auto px-4 py-4">
           <Link
-            href={`/group/${groupId}`}
+            href={`${routePrefix}/group/${groupId}`}
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-2"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />

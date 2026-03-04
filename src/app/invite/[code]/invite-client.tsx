@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AuthModal } from "@/components/auth-modal";
 import { joinGroupByInviteCode } from "@/lib/actions/group";
@@ -18,6 +18,18 @@ export function InviteClient({ inviteCode }: InviteClientProps) {
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
 
+  const joinAndRedirect = useCallback(() => {
+    startTransition(async () => {
+      const result = await joinGroupByInviteCode(inviteCode);
+      if (result.success && result.groupId) {
+        router.push(`/group/${result.groupId}`);
+      } else {
+        setError(result.error || "Erro ao entrar no grupo");
+        setLoading(false);
+      }
+    });
+  }, [inviteCode, router, startTransition]);
+
   useEffect(() => {
     async function check() {
       const user = await getCurrentUser();
@@ -29,19 +41,7 @@ export function InviteClient({ inviteCode }: InviteClientProps) {
       }
     }
     check();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  function joinAndRedirect() {
-    startTransition(async () => {
-      const result = await joinGroupByInviteCode(inviteCode);
-      if (result.success && result.groupId) {
-        router.push(`/group/${result.groupId}`);
-      } else {
-        setError(result.error || "Erro ao entrar no grupo");
-        setLoading(false);
-      }
-    });
-  }
+  }, [joinAndRedirect]);
 
   function handleAuthSuccess() {
     setShowAuth(false);
